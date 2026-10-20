@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pesquisa-empresas"
+version = "1.0.0"
+description = "Pesquisa e enriquecimento local de dados públicos de empresas brasileiras"
+requires-python = ">=3.11"
+dependencies = [
+  "ddgs>=9.16",
+  "httpx>=0.28",
+  "openpyxl>=3.1",
+  "selectolax>=1.0",
+  "tldextract>=5.4",
+  "rapidfuzz>=3.14",
+  # Os 13 segmentos A–M e as regras de classificação são definidos uma única vez, no pacote da análise do
+  # Instagram; a pesquisa de empresas traduz CNAE/site para eles (empresas/categorias.py).
+  # É um pacote local deste repositório: instale-o antes (veja instalar.cmd).
+  "prospeccao-instagram",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+empresas = "empresas.cli:main"
+
+[tool.setuptools]
+packages = ["empresas"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

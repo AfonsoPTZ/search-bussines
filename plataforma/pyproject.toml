@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plataforma-prospeccao"
+version = "1.0.0"
+description = "Plataforma local de prospecção: une a análise de seguidores do Instagram e a pesquisa de empresas numa base consultável"
+requires-python = ">=3.11"
+# As duas automações são pacotes locais DESTE repositório, instalados no mesmo ambiente, nesta ordem
+# (é o que o instalar.cmd da raiz faz):  instagram -> pesquisa-empresas -> plataforma
+dependencies = [
+  "prospeccao-instagram",
+  "pesquisa-empresas",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+plataforma = "plataforma.cli:main"
+
+[tool.setuptools]
+packages = ["plataforma"]
+
+[tool.setuptools.package-data]
+plataforma = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

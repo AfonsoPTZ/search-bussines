@@ -1,0 +1,25 @@
+# SearXNG local da ferramenta pesquisa-empresas.
+# Herda os padrões oficiais e só sobrescreve o necessário.
+use_default_settings: true
+
+general:
+  instance_name: "pesquisa-empresas"
+
+search:
+  safe_search: 0
+  default_lang: "pt-BR"
+  formats:
+    - html
+    - json
+
+server:
+  secret_key: "d249384774ccaed97e215284685c4389c6b1ecbf28620494e9cb3100e6c8b4f1"
+  limiter: false        # instância privada, acessível só em 127.0.0.1
+  image_proxy: false
+
+# Motores que vêm desativados por padrão e são úteis para empresas brasileiras.
+engines:
+  - name: bing
+    disabled: false
+  - name: yahoo
+    disabled: false

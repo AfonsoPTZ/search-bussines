@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prospecção</title>
+<link rel="icon" type="image/png" href="/static/logo.png">
+<link rel="stylesheet" href="/static/app.css">
+<script type="module" src="/static/app.js"></script>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="app">
+  <aside class="lateral" id="lateral" aria-label="Navegação">
+    <div class="marca">
+      <img src="/static/logo.png" alt="RIP Memorial" class="marca-logo">
+    </div>
+    <nav id="menu"></nav>
+    <div class="lateral-rodape" id="lateral-rodape" aria-live="polite"></div>
+  </aside>
+  <div class="principal">
+    <header class="topo">
+      <button class="icone-btn menu-btn" id="menu-btn" aria-label="Abrir menu" aria-controls="lateral" aria-expanded="false"></button>
+      <h1 id="titulo">Visão geral</h1>
+      <form class="busca-global" id="busca-global" role="search">
+        <label class="sr" for="busca-global-q">Buscar empresas e perfis</label>
+        <input id="busca-global-q" type="search" placeholder="Buscar empresa, @perfil, CNPJ ou site…" autocomplete="off">
+      </form>
+      <button class="icone-btn" id="tema-btn" aria-label="Alternar tema claro/escuro" title="Tema"></button>
+    </header>
+    <main id="conteudo" tabindex="-1"></main>
+  </div>
+</div>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+<dialog id="dialogo"></dialog>
+</body>
+</html>

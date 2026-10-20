@@ -1,0 +1,31 @@
+# Ambiente Python (recriado por instalar.cmd)
+.venv/
+*/.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# DADOS REAIS DE TERCEIROS — nunca vão para o repositório.
+# As pastas de resultados são a fonte da verdade das análises e pesquisas e contêm dados de
+# pessoas e empresas. O banco da plataforma guarda as suas decisões. Faça backup deles à parte.
+instagram/resultados/
+pesquisa-empresas/resultados/
+pesquisa-empresas/entradas/
+pesquisa-empresas/cache/
+plataforma/dados/
+_backup/
+
+# Configuração local da máquina
+instagram/triagem.json
+.claude/settings.local.json
+.env
+
+# Sistema operacional / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/

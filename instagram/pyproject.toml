@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prospeccao-instagram"
+version = "1.0.0"
+description = "Prospecção local de parceiros do RIP Memorial entre os seguidores de um perfil do Instagram"
+requires-python = ">=3.11"
+dependencies = [
+  "httpx>=0.28",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+prospeccao = "prospeccao.cli:main"
+
+[tool.setuptools]
+packages = ["prospeccao"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

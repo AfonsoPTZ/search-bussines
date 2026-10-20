@@ -1,0 +1,14 @@
+{
+ "_leia_me": "Copie para triagem.json (mesma pasta) e ajuste. Só as chaves presentes substituem o padrão. Prioridades: 0 segmento, 1 comercial, 2 profissional, 3 indefinido, 4 pessoa, 9 privado.",
+ "ler_ate_prioridade": {"candidatos": 3, "todos": 4, "nenhum": -1},
+ "ler_privados": false,
+ "palavras_comerciais_extras": ["velatorio", "assistencial"],
+ "prenomes_extras": [],
+ "excluir_usuarios_regex": "",
+ "publicacoes": {
+  "motivos": ["duvidoso", "conta_comercial", "sinais_comerciais", "bio_vazia"],
+  "bio_vazia_ate_prioridade": 1,
+  "quantidade": 12,
+  "destaques": "se_inconclusivo"
+ }
+}

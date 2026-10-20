@@ -1,0 +1,13 @@
+# SearXNG local (opcional). Sobe com: docker compose up -d
+# Publicado apenas em 127.0.0.1 — não fica exposto na rede.
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: pesquisa-empresas-searxng
+    ports:
+      - "127.0.0.1:8888:8080"
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    environment:
+      - SEARXNG_BASE_URL=http://127.0.0.1:8888/
+    restart: unless-stopped
