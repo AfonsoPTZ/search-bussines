@@ -11,17 +11,28 @@ dist/
 # DADOS REAIS DE TERCEIROS — nunca vão para o repositório.
 # As pastas de resultados são a fonte da verdade das análises e pesquisas e contêm dados de
 # pessoas e empresas. O banco da plataforma guarda as suas decisões. Faça backup deles à parte.
-instagram/resultados/
-pesquisa-empresas/resultados/
-pesquisa-empresas/entradas/
+# As pastas em si são versionadas (só o LEIA-ME), para o projeto já vir com o lugar certo.
+instagram/resultados/*
+!instagram/resultados/LEIA-ME.md
+pesquisa-empresas/resultados/*
+!pesquisa-empresas/resultados/LEIA-ME.md
+pesquisa-empresas/entradas/*
+!pesquisa-empresas/entradas/LEIA-ME.md
 pesquisa-empresas/cache/
-plataforma/dados/
+plataforma/dados/*
+!plataforma/dados/LEIA-ME.md
 _backup/
 
 # Configuração local da máquina
 instagram/triagem.json
 .claude/settings.local.json
 .env
+
+# A sessão do Instagram nunca fica no projeto (fica criptografada em
+# %LOCALAPPDATA%\prospeccao-instagram), mas por garantia:
+*.sessao
+sessao*.json
+cookies*.txt
 
 # Sistema operacional / editor
 Thumbs.db
