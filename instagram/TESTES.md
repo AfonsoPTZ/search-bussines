@@ -113,7 +113,7 @@ Cada falha encontrada virou um teste de regressão com dado fictício equivalent
 
 | Situação | Itens |
 |---|---|
-| Comprovado em uso real | Coleta paginada; leitura de bio/categoria; publicações (fixados, legendas, hashtags, local); destaques; triagem por prioridade; execução em fases; limite; tempo e eventos no painel; pacote de revisão gerado; reclassificação offline; compatibilidade com análises antigas no painel |
+| Comprovado em uso real | Coleta paginada; leitura de bio/categoria; publicações (fixados, legendas, hashtags, local); destaques; triagem por prioridade; execução em fases; limite; tempo e eventos na interface; pacote de revisão gerado; reclassificação offline; compatibilidade com análises antigas |
 | Medido offline em dados reais | Cobertura da triagem (31% → 2% de perdas) e efeito das regras no gabarito de 1.000 |
 | Só com dados simulados | 429 persistente, modo noite esperando e retomando, checkpoint/desafio, sessão expirada, queda de rede, lista limitada pelo Instagram, retomada de uma análise antiga com migração (nada disso ocorreu nas provas reais), aplicação de decisões de revisão |
 | Limitado por fatores externos | Exige sessão logada. Escala acima de 1.000 seguidores não testada. Endpoints e `doc_id` podem mudar |

@@ -12,7 +12,15 @@ tem evidência contrária (ex.: site de uma homônima de outra cidade), e mesmo 
 
 Custo: zero. Não usa API paga nem chave de API. Usa sua assinatura do Claude Code e ferramentas abertas e gratuitas.
 
-> **Plataforma unificada (20/10/2026):** esta ferramenta também pode ser usada pela interface única em `../plataforma` (`Abrir plataforma.cmd` na pasta raiz, http://127.0.0.1:8770), que junta as análises do Instagram e as pesquisas de empresas numa base consultável, com filtros, vínculos perfil ↔ empresa e histórico. A CLI, a skill e o painel abaixo continuam funcionando.
+> **Plataforma unificada (20/10/2026):** a interface desta ferramenta é a plataforma em `../plataforma`
+> (`Abrir plataforma.cmd` na raiz, <http://127.0.0.1:8770>), que junta as análises do Instagram e as pesquisas de
+> empresas numa base consultável, com filtros por segmento e região, vínculos perfil ↔ empresa e histórico.
+> Normalmente os lotes nascem da **fila de pesquisa** de lá. A CLI e a skill abaixo continuam funcionando; o painel
+> próprio desta ferramenta foi removido.
+>
+> **Classificação (20/10/2026):** o campo `categoria` passou a ser o **segmento A–M** de parceiros do RIP Memorial
+> (`"F · Crematórios e funerárias humanas"`), e não mais uma categoria comercial genérica. Empresa fora dos 13
+> segmentos fica **sem segmento** — é o esperado.
 
 ---
 
@@ -66,22 +74,14 @@ cd "C:\Users\User\Desktop\Nova pasta (2)\pesquisa-empresas"
 | `empresas exportar [LOTE]` | Regenera o XLSX e os CSVs |
 | `empresas lotes` | Lista os lotes |
 | `empresas verificar` | Testa os buscadores e as APIs de CNPJ |
-| `empresas painel` | Abre a interface local no navegador |
 
 `LOTE` pode ser o nome da pasta, um pedaço do nome, ou ficar em branco (usa o último lote).
 
-### Interface local (opcional)
+### Interface
 
-```powershell
-.\.venv\Scripts\empresas.exe painel
-```
-
-Abre `http://127.0.0.1:8765`, que só é acessível do seu computador. Pela interface você pode:
-
-- colar uma lista e iniciar a pesquisa;
-- acompanhar o progresso (a página se atualiza sozinha);
-- ver a tabela de resultados;
-- baixar o XLSX e os CSVs.
+Esta ferramenta não tem mais painel próprio. A interface é a **plataforma**, em <http://127.0.0.1:8770>
+(`Abrir plataforma.cmd` na raiz do projeto): lá dá para iniciar pesquisas, acompanhar o progresso, filtrar a base
+por segmento e região, ver o vínculo com os perfis do Instagram e exportar.
 
 ---
 
@@ -250,13 +250,12 @@ Os intervalos entre requisições ficam em `empresas/config.py`.
 | `entradas.py` | Interpreta a lista (txt, csv ou xlsx) |
 | `web.py` | Busca e leitura de páginas (cache, robots.txt, ritmo por domínio) |
 | `extrair.py` | E-mails, telefones, WhatsApp, redes, CNPJ, CEP, endereço, horário, seguidores, avaliação, JSON-LD |
-| `categorias.py` | CNAE / tipo schema.org / palavras-chave → categoria simples |
+| `categorias.py` | CNAE / tipo schema.org / nome → **segmento A–M** (definidos em `../instagram/prospeccao/categorias.py`) |
 | `cnpj.py` | Validação de CNPJ, inclusive alfanumérico |
 | `cadastro.py` | APIs de CNPJ e de CEP com contingência |
 | `pesquisa.py` | Lógica de identificação, pontuação e consolidação |
 | `lote.py` | Execução em paralelo com checkpoint e retomada |
 | `exportar.py` | XLSX e CSV |
-| `painel.py` | Interface local |
 | `cli.py` | Comandos |
 
 ---

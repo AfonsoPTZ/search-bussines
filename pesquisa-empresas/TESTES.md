@@ -206,7 +206,7 @@ Sequência de `corrigir` executada e status resultante:
 | 4 | CNPJ com `--nao-confirmado` | `provavel` |
 | 5 | `--campo cnpj --confirmar` | `identificada` |
 
-## Planilha e painel
+## Planilha e interface
 
 **Planilha:**
 

@@ -11,9 +11,25 @@ A plataforma não substitui nenhuma delas. Ela as executa, acompanha o andamento
 consultável**:
 
 - empresas e perfis com filtros, detalhes e histórico;
+- a **fila de pesquisa**, que liga as duas metades do trabalho;
 - vínculo perfil ↔ empresa;
 - revisão de duplicidades;
 - revisão pelo Claude Code.
+
+Desde 20/10/2026 ela é a **única** interface: os painéis próprios das duas ferramentas (8765 e 8766) foram
+removidos.
+
+## O fluxo em uma frase
+
+A análise do Instagram descobre **quem** interessa (o @, o nome e o segmento A–M); a pesquisa de empresas descobre
+**quem é essa empresa** (CNPJ, telefone, endereço, site). Entre as duas está a **fila**:
+
+```
+Instagram  ->  FILA (pendente)  ->  pesquisa de empresas  ->  base de empresas
+```
+
+Todo perfil `identificado`, de execução não arquivada e sem empresa confirmada entra na fila sozinho, e sai dela
+quando ganha a empresa. Assim nada se perde se você parar e voltar noutro dia.
 
 Custo: zero. Não há API paga nem serviço externo novo, e tudo roda em `127.0.0.1`.
 
@@ -32,14 +48,19 @@ Fechar a janela encerra só a interface. Análises e pesquisas em andamento cont
 
 ### Instalar (só se recriar o ambiente)
 
+Clique duas vezes em **`instalar.cmd`**, na raiz. Ou, no terminal:
+
 ```powershell
 cd "C:\Users\User\Desktop\Nova pasta (2)"
 py -3.14 -m venv .venv
-.\.venv\Scripts\pip install -e ".\pesquisa-empresas[dev]" -e ".\instagram[dev]" -e ".\plataforma[dev]"
+.\.venv\Scripts\pip install -e ".\instagram[dev]"
+.\.venv\Scripts\pip install -e ".\pesquisa-empresas[dev]"
+.\.venv\Scripts\pip install -e ".\plataforma[dev]"
 ```
 
-Os `.venv` antigos de `instagram/` e `pesquisa-empresas/` continuam funcionando. As skills do Claude Code usam esses
-ambientes. Os três ambientes apontam para o mesmo código e as mesmas pastas de resultados.
+**A ordem importa**: `pesquisa-empresas` depende de `prospeccao-instagram` (que define os 13 segmentos A–M) e a
+plataforma depende das duas. Há um ambiente só, na raiz; os `.venv` que existiam dentro de `instagram/` e
+`pesquisa-empresas/` foram removidos em 20/10/2026.
 
 ---
 
@@ -49,6 +70,7 @@ ambientes. Os três ambientes apontam para o mesmo código e as mesmas pastas de
 |---|---|
 | **Visão geral** | Totais, execuções em andamento ou que precisam de atenção, próximos passos e perfis por segmento |
 | **Instagram** | Iniciar uma análise (@, segmentos, limite, modo noite), ver a sessão e a lista de análises |
+| **Fila de pesquisa** | Quem foi identificado e ainda espera os dados da empresa. Pesquisar os pendentes, ou dispensar quem não é empresa |
 | **Empresas** | Base de empresas com busca e filtros combináveis, exportação CSV/XLSX, nova pesquisa e "pesquisar novamente" |
 | **Perfis** | Todos os perfis analisados, com segmento, situação e empresa vinculada. Permite pesquisar as empresas dos filtrados |
 | **Execuções** | Histórico de análises, pesquisas e revisões pelo Claude, com estado real, progresso, falhas e pendentes |
@@ -95,7 +117,7 @@ Mostra:
 - busca por nome, @, CNPJ, site ou cidade;
 - UF e cidade (com ou sem acento);
 - segmento A–M, por origem (perfil identificado ou inferido);
-- categoria (CNAE), status, confiança;
+- status, confiança;
 - Instagram (com, sem, vinculado, sugerido) e contato (com, sem, WhatsApp);
 - pendências: revisar, não confirmados, sem CNPJ, divergência, possível duplicidade, desatualizada, erro;
 - origem (via Instagram ou lista), execução e período.
@@ -116,10 +138,17 @@ Também dá para ordenar e paginar, e a exportação CSV/XLSX usa os mesmos filt
 ## Fluxo completo
 
 1. **Instagram:** informe o @ e inicie. A análise roda como processo próprio e grava tudo na hora (checkpoint).
-2. A plataforma lê as pastas a cada 4 s e mostra o andamento. Os perfis entram na base de perfis.
-3. **No mesmo dia ou depois**, abra a análise e use **"Pesquisar as empresas destes perfis"** (filtrando por
-   segmento, se quiser). A lista sai no formato `Nome | @perfil | Cidade/UF`, e a pesquisa fica ligada à análise de
-   origem.
+2. A plataforma lê as pastas a cada 4 s e mostra o andamento. Os perfis entram na base de perfis e os identificados
+   entram na **fila de pesquisa**.
+3. **No mesmo dia ou depois**, esvazie a fila, de uma destas três formas (todas fazem a mesma pesquisa):
+
+   | Onde | Como |
+   |---|---|
+   | Aba **Fila de pesquisa** | Botão **Pesquisar pendentes** (dá para filtrar por segmento e limitar a quantidade) |
+   | Painel de uma análise | **"Pesquisar as empresas destes perfis"**, só os daquela análise |
+   | Claude Code, no VS Code | O comando **`/executar-tarefa`**, que também revisa os incertos com fonte |
+
+   A lista sai no formato `Nome | @perfil | Cidade/UF`, e a pesquisa fica ligada à análise de origem.
 4. A ferramenta de empresas pesquisa (≈5–15 s por empresa, 3 em paralelo). Pode parar e retomar sem repetir nada.
 5. As empresas entram na base **vinculadas aos perfis**. O vínculo é confirmado porque a pesquisa partiu do @. Elas
    recebem o segmento do perfil identificado.
@@ -136,8 +165,8 @@ Também dá para ordenar e paginar, e a exportação CSV/XLSX usa os mesmos filt
 
 | Tipo | Conteúdo | O que acontece com ele |
 |---|---|---|
-| Derivado | Execuções, perfis, pesquisas, campos de filtro das empresas | É refeito a partir das pastas, a qualquer momento |
-| Seu | Atribuição pesquisa → empresa, uniões e separações, vínculos confirmados ou rejeitados à mão, duplicidades decididas, execuções arquivadas, histórico de decisões | Fica preservado entre sincronizações. **Faça backup desse arquivo** |
+| Derivado | Execuções, perfis, pesquisas, campos de filtro das empresas, **a fila** | É refeito a partir das pastas, a qualquer momento |
+| Seu | Atribuição pesquisa → empresa, uniões e separações, vínculos confirmados ou rejeitados à mão, duplicidades decididas, execuções arquivadas, **perfis dispensados da fila**, histórico de decisões | Fica preservado entre sincronizações. **Faça backup desse arquivo** |
 
 - **Migrações:** são automáticas, pelo `PRAGMA user_version`. Cada versão nova do esquema acrescenta um passo em
   `db.py`; nenhum passo antigo é alterado. Para reconstruir só o derivado:
@@ -167,9 +196,15 @@ associação automática é refeita. Uniões e separações feitas por você nun
 **Pesquisas exibidas e segmento:**
 
 - A empresa exibe a **pesquisa mais recente sem erro técnico**. As anteriores ficam no histórico.
-- **Segmento:** vem do perfil vinculado e identificado. Sem perfil, é **inferido** pelas mesmas regras A–M aplicadas
-  ao CNAE/categoria (e ao nome, se o CNAE for genérico). O inferido aparece tracejado, marcado "inferido, não
-  confirmado", e pode ser filtrado à parte.
+- **Segmento (A–M):** é o **único** critério de classificação do projeto. Vem, nesta ordem:
+  1. do **perfil vinculado e identificado** — a evidência mais específica (uma funerária *pet* tem CNAE de funerária,
+     mas é E, não F);
+  2. sem perfil, do **segmento que a pesquisa já resolveu** pelo CNAE da Receita ou pelo tipo declarado no site;
+  3. sem nenhum dos dois, da **inferência pelo nome**, com as mesmas regras A–M.
+
+  Os casos 2 e 3 aparecem tracejados, marcados "inferido, não confirmado", e podem ser filtrados à parte. Empresa
+  fora dos 13 segmentos fica **sem segmento** — é o esperado, não uma falha. Não existem mais categorias comerciais
+  genéricas (padaria, restaurante): foram removidas em 20/10/2026.
 
 **Vínculos perfil ↔ empresa:**
 
@@ -212,7 +247,16 @@ Qualquer outra ação é negada automaticamente. O andamento, as ações executa
 .\.venv\Scripts\python -m plataforma painel [--porta 8770] [--sem-navegador]
 .\.venv\Scripts\python -m plataforma sincronizar [--completa]     # atualiza o banco a partir das pastas
 .\.venv\Scripts\python -m plataforma resumo                       # visão geral em JSON
+
+# fila de pesquisa
+.\.venv\Scripts\python -m plataforma fila resumo                  # quantos pendentes, por segmento
+.\.venv\Scripts\python -m plataforma fila listar [--estado …] [--segmentos A,B] [--limite N] [--json]
+.\.venv\Scripts\python -m plataforma fila pesquisar [--limite N] [--segmentos A,B]
+.\.venv\Scripts\python -m plataforma fila dispensar @perfil --motivo "não é empresa"
+.\.venv\Scripts\python -m plataforma fila reabrir @perfil
 ```
+
+`fila listar --json` é o que o comando `/executar-tarefa` do Claude Code usa.
 
 As CLIs `prospeccao` e `empresas` e as skills continuam iguais. As ferramentas ganharam:
 
@@ -246,9 +290,9 @@ Nenhum segredo fica no projeto. A sessão do Instagram continua criptografada (D
 ## Testes
 
 ```powershell
-cd plataforma;          ..\.venv\Scripts\python -m pytest -q    # 58 testes
-cd ..\pesquisa-empresas; ..\.venv\Scripts\python -m pytest -q   # 28
-cd ..\instagram;         ..\.venv\Scripts\python -m pytest -q   # 165
+cd plataforma;          ..\.venv\Scripts\python -m pytest -q    # 69 testes
+cd ..\pesquisa-empresas; ..\.venv\Scripts\python -m pytest -q   # 31
+cd ..\instagram;         ..\.venv\Scripts\python -m pytest -q   # 163
 ```
 
 Detalhes e testes reais em [TESTES.md](TESTES.md).
@@ -262,5 +306,6 @@ Detalhes e testes reais em [TESTES.md](TESTES.md).
   ou de fora do Brasil tendem a dar "parcial" ou "não encontrada".
 - **Revisão em segundo plano** depende do Claude Code instalado e logado. Ela consome cota da assinatura.
 - **SearXNG** é opcional. Sem o Docker ligado, a pesquisa usa a contingência `ddgs`, com menos buscadores.
-- **Escala:** testada com a base real (3 análises, 1.004 perfis, 14 lotes, 113 pesquisas). A sincronização inicial
-  leva cerca de 1 s. Análises com dezenas de milhares de perfis devem funcionar, mas não foram medidas.
+- **Escala:** já foi usada com uma base real de 3 análises, 1.004 perfis, 14 lotes e 113 pesquisas, com a
+  sincronização inicial em cerca de 1 s (essa base foi arquivada em `_backup/` na limpeza de 20/10/2026). Análises
+  com dezenas de milhares de perfis devem funcionar, mas não foram medidas.

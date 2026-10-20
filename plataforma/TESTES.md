@@ -7,13 +7,15 @@ Claude Code 2.1.304 (extensão do VS Code).
 
 | Suíte | Resultado |
 |---|---|
-| `plataforma` | **58 passando** |
-| `pesquisa-empresas` | **28 passando** (eram 21; os 7 novos cobrem o lote: batimento, parada segura, erros, trava e gravação) |
-| `instagram` | **165 passando** (eram 164; o novo cobre a trava de processo único) |
+| `plataforma` | **69 passando** (eram 58; os 11 novos cobrem a fila de pesquisa) |
+| `pesquisa-empresas` | **31 passando** (eram 28; os novos cobrem a tradução CNAE → segmento A–M) |
+| `instagram` | **163 passando** (eram 165; saíram os 2 do painel removido) |
 
-As suítes antigas também passam nos `.venv` originais de cada módulo. Todos os testes usam dados fictícios (`teste_*`)
-no formato real: os registros são montados com `empresas.pesquisa.Registro` e os perfis classificados com
-`prospeccao.classificar`.
+Todos os testes usam dados fictícios (`teste_*`) no formato real: os registros são montados com
+`empresas.pesquisa.Registro` e os perfis classificados com `prospeccao.classificar`.
+
+**Verificado também em cópia limpa:** `git clone` num diretório vazio + `instalar.cmd` (venv novo, os três pacotes
+na ordem) + as três suítes → 263 passando. É o caminho de um computador novo.
 
 **O que a suíte da plataforma cobre:**
 
@@ -25,8 +27,15 @@ no formato real: os registros são montados com `empresas.pesquisa.Registro` e o
   de vínculo sobrevive à sincronização e a uma união. Uma pasta movida e devolvida reencontra uniões e vínculos.
   Uma correção que remove o @ desfaz a união automática, mas nunca a manual.
 - **Vínculos e segmentos:** vínculo confirmado pela entrada ou pelo site oficial, sugerido pela busca ou pelo link da
-  bio. Segmento vem do perfil vinculado; o inferido fica separado (razão social com "Catedral" não vira igreja;
-  funerária pet com perfil E não ganha F).
+  bio. Segmento vem do perfil vinculado; sem perfil, do CNAE/site; só então do nome. O inferido fica separado (razão
+  social com "Catedral" não vira igreja; funerária pet com perfil E não ganha F). Empresa fora dos 13 segmentos
+  (padaria) fica sem segmento nenhum.
+- **Fila de pesquisa** (`test_fila.py`): perfil identificado entra e perfil pessoal não; a linha enviada sai como
+  `Nome | @ | Cidade`; sincronizar é idempotente e não "renova" a data de quem já esperava; o perfil sai da fila
+  quando a empresa é encontrada; dispensar tira da fila e **não volta** em sincronizações seguintes, e reabrir
+  devolve; "pesquisar pendentes" cria o lote, marca como `pesquisando` e respeita limite e filtro por segmento;
+  fila vazia avisa em vez de criar lote vazio; arquivar a análise tira os perfis dela da fila e restaurar devolve;
+  estado inválido é recusado; e a API (`/api/fila`, `/api/fila/dispensar`, contador em `/api/status`).
 - **Estados:**
   - Instagram: concluída, parcial (limite ou lista limitada pelo Instagram), em andamento, parada sem batimento,
     pausada e precisa de ação.

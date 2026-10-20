@@ -8,7 +8,10 @@ que o Claude Code (pela sua assinatura) ou uma pessoa revisa depois.
 Este módulo é independente da ferramenta `pesquisa-empresas` (CNPJ e contatos). Ele não pesquisa empresas na internet
 e não enriquece contatos. Custo: zero. Não usa Apify, API paga nem chave de API, nem mesmo na revisão.
 
-> **Plataforma unificada (20/10/2026):** esta ferramenta também pode ser usada pela interface única em `../plataforma` (`Abrir plataforma.cmd` na pasta raiz, http://127.0.0.1:8770), que junta as análises do Instagram e as pesquisas de empresas numa base consultável, com filtros, vínculos perfil ↔ empresa e histórico. A CLI, a skill e o painel abaixo continuam funcionando.
+> **Plataforma unificada (20/10/2026):** a interface desta ferramenta é a plataforma em `../plataforma`
+> (`Abrir plataforma.cmd` na raiz, <http://127.0.0.1:8770>), que junta as análises do Instagram e as pesquisas de
+> empresas numa base consultável, com filtros, vínculos perfil ↔ empresa, fila de pesquisa e histórico. A CLI e a
+> skill abaixo continuam funcionando; o painel próprio desta ferramenta foi removido.
 
 ---
 
@@ -29,33 +32,35 @@ pedir verificação ou a restringir temporariamente a conta.
 
 | Opção | Como fazer |
 |---|---|
-| Importar do Firefox | Entre em instagram.com pelo Firefox e rode `.\.venv\Scripts\prospeccao.exe sessao firefox` (ou clique em **Importar do Firefox** no painel) |
-| Colar o cookie | No navegador logado: F12 → Aplicativo (Chrome/Edge) ou Armazenamento (Firefox) → Cookies → `instagram.com` → valor de `sessionid`. Rode `prospeccao sessao definir` (entrada oculta) ou cole no painel |
+| Importar do Firefox | Entre em instagram.com pelo Firefox e rode `.\.venv\Scripts\prospeccao.exe sessao firefox` (ou clique em **Importar do Firefox** na aba Sistema da plataforma) |
+| Colar o cookie | No navegador logado: F12 → Aplicativo (Chrome/Edge) ou Armazenamento (Firefox) → Cookies → `instagram.com` → valor de `sessionid`. Rode `prospeccao sessao definir` (entrada oculta) ou cole na aba Sistema da plataforma |
 
 Conferir: `prospeccao sessao testar` → "Sessão válida: logado como @...".
 
 A sessão fica em `%LOCALAPPDATA%\prospeccao-instagram\sessao.bin`, fora do projeto, criptografada com o DPAPI do
-Windows. Ela nunca aparece no painel, nos logs ou nas exportações e só é enviada ao instagram.com. Para apagar:
+Windows. Ela nunca aparece na interface, nos logs ou nas exportações e só é enviada ao instagram.com. Para apagar:
 `prospeccao sessao remover`. Os cookies do Chrome e do Edge não são lidos: a criptografia vinculada ao app não é
 contornada.
 
 ---
 
-## 2. Usar pelo painel (forma principal)
+## 2. Usar pela plataforma (forma principal)
 
-```powershell
-.\.venv\Scripts\prospeccao.exe painel
-```
+Clique duas vezes em **`Abrir plataforma.cmd`**, na raiz do projeto, e abra <http://127.0.0.1:8770>.
+(O painel próprio desta ferramenta, que ficava em 8766, foi removido em 20/10/2026: a plataforma o substitui.)
 
-O painel abre em `http://127.0.0.1:8766`, acessível só deste computador.
+Na aba **Instagram**:
 
 1. Informe o @ de origem, por exemplo `@feirafunerariabrasil`.
-2. Marque as categorias (todas vêm marcadas).
+2. Marque os segmentos (todos vêm marcados).
 3. Se quiser, defina um limite de seguidores.
 4. Leitura de perfis: `candidatos` é o recomendado.
 5. Publicações: `duvidosos` é o recomendado.
 6. **Modo noite**: marque para análises longas. Veja a seção 4.
 7. Clique em **Iniciar análise**.
+
+Terminada a análise, todo perfil identificado entra na **fila de pesquisa** da plataforma, para ganhar CNPJ,
+telefone e endereço — pela aba *Fila de pesquisa* ou pelo comando `/executar-tarefa` do Claude Code.
 
 A página da análise mostra:
 
@@ -95,7 +100,7 @@ Ela não aparece quando o Instagram limita a lista.
 | `divergencias [ANALISE]` | Onde a revisão discordou do automático (material para ajustar regras) |
 | `reclassificar [ANALISE]` | Reaplica as regras atuais aos dados já coletados, sem internet |
 | `classificar @X --nome … --bio … [--categoria-ig …]` | Testa a classificação de um perfil digitado, sem rede |
-| `listar` · `sessao …` · `painel` | Lista análises, gerencia a sessão, abre a interface |
+| `listar` · `sessao …` | Lista análises, gerencia a sessão |
 
 `ANALISE` pode ser a pasta, um pedaço do nome ou ficar em branco (a mais recente).
 
@@ -150,7 +155,7 @@ Cada análise cria `resultados/<data>_<origem>/`:
 | `perfis.jsonl` | Análises (fases 2 e 3). Vale o último registro de cada @, e a classificação automática original é preservada |
 | `revisao/pacote.md` · `pacote.json` · `decisoes.json` | Pacote de revisão e modelo de decisões |
 | `correcoes.jsonl` | Decisões de revisão, com nota e revisor |
-| `estado.json` · `origem.json` · `log.txt` | Andamento e eventos · perfil de origem · saída das execuções do painel |
+| `estado.json` · `origem.json` · `log.txt` | Andamento e eventos · perfil de origem · saída das execuções iniciadas pela plataforma |
 | `executando.lock` | Existe só durante a execução: impede dois processos na mesma análise |
 
 `resultados/` contém dados reais de terceiros: fica no `.gitignore` e não deve ser publicada.
@@ -249,7 +254,8 @@ Também em `classificar.py`:
 - Limite de requisições: espera, depois pausa. Verificação de segurança: para. **Nada é contornado**: não há CAPTCHA,
   proxy, troca de IP ou de conta, nem disfarce de navegador ou de impressão digital TLS.
 - Lista parcial do Instagram (`should_limit_list_of_followers`) é registrada e informada.
-- O painel atende só em 127.0.0.1 e recusa formulários de outros sites (CSRF) e hosts estranhos (DNS rebinding).
+- A interface (a plataforma) atende só em 127.0.0.1 e recusa ações vindas de outros sites (CSRF) e hosts estranhos
+  (DNS rebinding).
 
 ---
 
